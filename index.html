@@ -20,7 +20,7 @@ body {
     background: #1e293b;
     padding: 20px;
     margin: 20px auto;
-    width: 300px;
+    width: 320px;
     border-radius: 10px;
 }
 
@@ -33,6 +33,7 @@ button {
     background: #3b82f6;
     color: white;
     font-size: 16px;
+    cursor: pointer;
 }
 
 input {
@@ -45,6 +46,12 @@ input {
     margin-top: 10px;
     font-size: 18px;
     color: #22c55e;
+}
+
+.preview {
+    margin-top: 10px;
+    max-width: 100%;
+    border-radius: 8px;
 }
 </style>
 
@@ -61,7 +68,9 @@ input {
         <h3>Đăng ký khuôn mặt</h3>
 
         <input id="name" placeholder="Nhập tên">
-        <input type="file" id="file_reg">
+        <input type="file" id="file_reg" accept="image/*" onchange="preview(this, 'img_reg')">
+
+        <img id="img_reg" class="preview">
 
         <button onclick="register()">Đăng ký</button>
 
@@ -72,7 +81,9 @@ input {
     <div class="box">
         <h3>Test nhận diện</h3>
 
-        <input type="file" id="file_rec">
+        <input type="file" id="file_rec" accept="image/*" onchange="preview(this, 'img_rec')">
+
+        <img id="img_rec" class="preview">
 
         <button onclick="recognize()">Nhận diện</button>
 
@@ -83,7 +94,16 @@ input {
 
 <script>
 
-const API = "https://face-api-z57y.onrender.com";
+// ===== THAY URL BACKEND =====
+const API = "https://your-api.onrender.com";
+
+// ===== PREVIEW IMAGE =====
+function preview(input, id) {
+    const file = input.files[0];
+    if (file) {
+        document.getElementById(id).src = URL.createObjectURL(file);
+    }
+}
 
 // ================= REGISTER =================
 async function register() {
@@ -103,6 +123,7 @@ async function register() {
     document.getElementById("reg_result").innerText = "Đang xử lý...";
 
     try {
+
         let res = await fetch(API + "/register", {
             method: "POST",
             body: fd
@@ -113,7 +134,7 @@ async function register() {
         document.getElementById("reg_result").innerText = txt;
 
     } catch (e) {
-        document.getElementById("reg_result").innerText = "Lỗi kết nối";
+        document.getElementById("reg_result").innerText = "Lỗi kết nối server";
     }
 }
 
@@ -127,35 +148,16 @@ async function recognize() {
         return;
     }
 
-    document.getElementById("rec_result").innerText = "Đang xử lý...";
+    let fd = new FormData();
+    fd.append("file", file);
+
+    document.getElementById("rec_result").innerText = "Đang nhận diện...";
 
     try {
 
-        // gọi AI trước
-        let fd = new FormData();
-        fd.append("file", file);
-
-        let ai = await fetch(API + "/recognize_image"), {
+        let res = await fetch(API + "/recognize_image", {
             method: "POST",
             body: fd
-        });
-
-        let aiData = await ai.json();
-
-        if (!aiData.embedding) {
-            document.getElementById("rec_result").innerText = "Không phát hiện khuôn mặt";
-            return;
-        }
-
-        // gửi embedding lên server
-        let res = await fetch(API + "/recognize", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                embedding: aiData.embedding
-            })
         });
 
         let data = await res.json();
