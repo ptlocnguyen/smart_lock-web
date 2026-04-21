@@ -111,3 +111,32 @@ async function loadLogs() {
         </tr>`;
     });
 }
+
+// ================= RECOGNIZE =================
+async function recognize() {
+    const fileInput = document.getElementById("rec_file");
+
+    if (!fileInput.files.length) {
+        alert("Chọn ảnh trước");
+        return;
+    }
+
+    let form = new FormData();
+    form.append("file", fileInput.files[0]);
+
+    try {
+        let res = await fetch(BASE + "/recognize", {
+            method: "POST",
+            body: form
+        });
+
+        let data = await res.json();
+
+        document.getElementById("rec_result").innerText =
+            JSON.stringify(data, null, 2);
+
+    } catch (err) {
+        document.getElementById("rec_result").innerText =
+            "Lỗi: " + err;
+    }
+}
