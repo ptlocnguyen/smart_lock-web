@@ -1,9 +1,31 @@
 body {
     font-family: Arial;
-    padding: 30px;
+    padding: 20px;
 }
 
-input, button {
-    margin: 5px 0;
+.tabs button {
+    margin-right: 10px;
+    padding: 10px;
+}
+
+input, select {
+    display: block;
+    margin: 10px 0;
     padding: 8px;
+}
+
+button {
+    padding: 8px;
+    background: blue;
+    color: white;
+    border: none;
+}
+
+table {
+    width: 100%;
+}
+
+td, th {
+    padding: 8px;
+    border-bottom: 1px solid #ccc;
 }
