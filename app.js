@@ -1,4 +1,4 @@
-const BASE = "https://your-app.onrender.com";
+const BASE = "https://face-api-z57y.onrender.com";
 
 // TAB
 function showTab(id) {
